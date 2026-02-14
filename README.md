@@ -10,14 +10,15 @@ Custom statusline for Claude Code displaying session information, git status, an
 
 ## Layout
 
-The statusline displays 5 lines:
+The statusline displays 6 lines:
 
 ```
-📁 ~/Development/project  🌿 main [+3 ~2] ↑1 ↓2 (2h ago) 📦1
-🤖 Opus 4.5  📟 v2.1.29  💬 default  🔌 2 MCP  🪝 1 hook
-🧠 Context Used: 15% [■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□]
-💰 $0.45 ($12.50/h)  📊 45000 in / 12000 out (1234 tpm)
-💡 Shift+Tab to accept a file edit
+📁 ~/Development/cc-statusline  🌿 main (1m ago)
+🤖 Opus 4.6  📟 v2.1.42  💬 default  🪝 1 hook
+🧠 Context Used: 20% [■■■■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□]
+⌛ 2h 44m until reset at 19:00 (45%) [■■■■□□□□□□]
+💰 $0.65 ($7.10/h)  📊 9757 in / 8788 out (3370 tpm)
+💡 Ctrl+R to search command history
 ```
 
 ## Line 1: Directory & Git
@@ -53,7 +54,15 @@ The statusline displays 5 lines:
 - Peach: 51-70% used
 - Coral red: ≥71% used
 
-## Line 4: Cost & Tokens
+## Line 4: Session Timer
+
+| Element | Description |
+|---------|-------------|
+| ⌛ | Time until next session reset |
+| `(N%)` | Session usage percentage |
+| Progress bar | 10-char session progress bar |
+
+## Line 5: Cost & Tokens
 
 | Element | Description |
 |---------|-------------|
@@ -62,7 +71,7 @@ The statusline displays 5 lines:
 | 📊 | Token split: input / output |
 | `(N tpm)` | Tokens per minute |
 
-## Line 5: Tips
+## Line 6: Tips
 
 | Element | Description |
 |---------|-------------|
