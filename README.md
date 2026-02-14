@@ -14,14 +14,7 @@ Based on [cc-statusline](https://github.com/chongdashu/cc-statusline) by [@chong
 
 The statusline displays 6 lines:
 
-```ansi
-📁 [38;5;117m~/Development/cc-statusline[0m  🌿 [38;5;150mmain[0m [38;5;150m(1m ago)[0m
-🤖 [38;5;147mOpus 4.6[0m  📟 [38;5;249mv2.1.42[0m  💬 [38;5;249mdefault[0m  🪝 [38;5;249m1 hook[0m
-🧠 [38;5;158mContext Used: 20% [■■■■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□][0m
-⌛ [38;5;158m2h 44m until reset at 19:00 (45%)[0m [38;5;158m[■■■■□□□□□□][0m
-💰 [38;5;222m$0.65[0m ([38;5;220m$7.10/h[0m)  📊 [38;5;189m9757 in / 8788 out (3370 tpm)[0m
-💡 [38;5;243mCtrl+R to search command history[0m
-```
+![statusline preview](statusline-preview.png)
 
 ## Line 1: Directory & Git
 
