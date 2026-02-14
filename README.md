@@ -2,6 +2,8 @@
 
 Custom statusline for Claude Code displaying session information, git status, and helpful tips.
 
+Based on [cc-statusline](https://github.com/chongdashu/cc-statusline) by [@chongdashu](https://github.com/chongdashu).
+
 ## Location
 
 ```
