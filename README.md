@@ -4,10 +4,25 @@ Custom statusline for Claude Code displaying session information, git status, an
 
 Based on [cc-statusline](https://github.com/chongdashu/cc-statusline) by [@chongdashu](https://github.com/chongdashu).
 
-## Location
+## Installation
 
+Download the script to your `~/.claude` directory and make it executable:
+
+```bash
+curl -o ~/.claude/statusline.sh https://raw.githubusercontent.com/mmasters/cc-statusline/refs/heads/main/statusline.sh
+chmod +x ~/.claude/statusline.sh
 ```
-~/.claude/statusline.sh
+
+Then add the following to your `~/.claude/settings.json`:
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  }
+}
 ```
 
 ## Layout
@@ -146,16 +161,3 @@ Tips rotate based on: `$(date +%s) / 60 % ${#tips[@]}`
 - `jq` (optional, has bash fallback)
 - `git` (for git features)
 
-## Enabling
-
-In `~/.claude/settings.json`:
-
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh",
-    "padding": 0
-  }
-}
-```
