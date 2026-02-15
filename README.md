@@ -16,10 +16,11 @@ The statusline displays 6 lines:
 
 ![statusline preview](statusline-preview.png)
 
-## Line 1: Directory & Git
+## Line 1: Hostname, Directory & Git
 
 | Element | Description |
 |---------|-------------|
+| 🖥️ | Computer hostname |
 | 📁 | Current working directory |
 | 🌿 | Git branch name |
 | `[+N ~N -N ●N]` | Uncommitted changes: +added, ~modified, -deleted, ●staged |
@@ -79,6 +80,7 @@ The statusline displays 6 lines:
 Color functions are defined near the top of the script:
 
 ```bash
+host_color()       # 38;5;183 - soft pink/mauve
 dir_color()        # 38;5;117 - sky blue
 git_color()        # 38;5;150 - soft green
 model_color()      # 38;5;147 - light purple
@@ -135,6 +137,7 @@ Tips rotate based on: `$(date +%s) / 60 % ${#tips[@]}`
 | Data | Source |
 |------|--------|
 | Directory, model, context, cost, tokens | Piped JSON from Claude Code |
+| Hostname | `hostname` command |
 | Git info | Direct git commands |
 | MCP servers, hooks | `~/.claude/settings.json` |
 

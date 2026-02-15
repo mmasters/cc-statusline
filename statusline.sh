@@ -312,9 +312,13 @@ end_hm=$(fmt_time_hm "$block_end_sec")
 session_txt="$(printf '%dh %dm until reset at %s (%d%%)' "$rh" "$rm" "$end_hm" "$session_pct")"
 session_bar=$(progress_bar "$session_pct" 10)
 
+# ---- hostname ----
+host_name=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "unknown")
+host_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;183m'; fi; }  # soft pink/mauve
+
 # ---- render statusline ----
-# Line 1: Directory and git
-printf '📁 %s%s%s' "$(dir_color)" "$current_dir" "$(rst)"
+# Line 1: Directory, hostname, and git
+printf '🖥️ %s%s%s  📁 %s%s%s' "$(host_color)" "$host_name" "$(rst)" "$(dir_color)" "$current_dir" "$(rst)"
 if [ -n "$git_branch" ]; then
   printf '  🌿 %s%s%s' "$(git_color)" "$git_branch" "$(rst)"
   if [ -n "$git_changes" ]; then
