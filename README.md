@@ -35,32 +35,32 @@ The statusline displays 6 lines:
 
 ## Line 1: Hostname, Directory & Git
 
-| Icon | Nerd Font | Codepoint | Description |
-|------|-----------|-----------|-------------|
-| `` | nf-fa-home | `f015` | Computer hostname |
-| `` | nf-fa-folder | `f07b` | Current working directory |
-| `` | nf-dev-git_branch | `e725` | Git branch name |
-| | | | `[+N ~N -N ●N]` Uncommitted changes |
-| | | | `↑N ↓N` Commits ahead/behind remote |
-| | | | `(Xh ago)` Time since last commit |
-| `󰆗` | nf-md-content_save | `f0197` | Stash count |
+| Nerd Font | Codepoint | Description |
+|-----------|-----------|-------------|
+| `nf-fa-home` | `U+F015` | Computer hostname |
+| `nf-fa-folder` | `U+F07B` | Current working directory |
+| `nf-dev-git_branch` | `U+E725` | Git branch name |
+| | | `[+N ~N -N ●N]` Uncommitted changes |
+| | | `↑N ↓N` Commits ahead/behind remote |
+| | | `(Xh ago)` Time since last commit |
+| `nf-md-content_save` | `U+F0197` | Stash count |
 
 ## Line 2: Environment
 
-| Icon | Nerd Font | Codepoint | Description |
-|------|-----------|-----------|-------------|
-| `󱜙` | nf-md-robot_happy | `f1719` | Model name (Opus 4.6, Sonnet, Haiku) |
-| `󱈤` | nf-md-tag_text | `f1224` | Claude Code version |
-| `󰅺` | nf-md-comment | `f017a` | Output style (default, concise, verbose) |
-| `󱘖` | nf-md-connection | `f1616` | MCP servers count |
-| `󰛢` | nf-md-link_variant | `f06e2` | Hooks count |
+| Nerd Font | Codepoint | Description |
+|-----------|-----------|-------------|
+| `nf-md-robot_happy` | `U+F1719` | Model name (Opus 4.6, Sonnet, Haiku) |
+| `nf-md-tag_text` | `U+F1224` | Claude Code version |
+| `nf-md-comment` | `U+F017A` | Output style (default, concise, verbose) |
+| `nf-md-connection` | `U+F1616` | MCP servers count |
+| `nf-md-link_variant` | `U+F06E2` | Hooks count |
 
 ## Line 3: Context Usage
 
-| Icon | Nerd Font | Codepoint | Description |
-|------|-----------|-----------|-------------|
-| `󰧑` | nf-md-brain | `f09d1` | Context used percentage with 60-char progress bar |
-| | | | `■` = used, `□` = remaining |
+| Nerd Font | Codepoint | Description |
+|-----------|-----------|-------------|
+| `nf-md-brain` | `U+F09D1` | Context used percentage with 60-char progress bar |
+| | | `■` = used, `□` = remaining |
 
 **Colors change based on context used:**
 - Mint green: ≤50% used
@@ -69,26 +69,26 @@ The statusline displays 6 lines:
 
 ## Line 4: Session Timer
 
-| Icon | Nerd Font | Codepoint | Description |
-|------|-----------|-----------|-------------|
-| `󰔛` | nf-md-timer_outline | `f051b` | Time until next session reset |
-| | | | `(N%)` Session usage percentage |
-| | | | 10-char session progress bar |
+| Nerd Font | Codepoint | Description |
+|-----------|-----------|-------------|
+| `nf-md-timer_outline` | `U+F051B` | Time until next session reset |
+| | | `(N%)` Session usage percentage |
+| | | 10-char session progress bar |
 
 ## Line 5: Cost & Tokens
 
-| Icon | Nerd Font | Codepoint | Description |
-|------|-----------|-----------|-------------|
-| `󰴮` | nf-md-sack | `f0d2e` | Total session cost in USD |
-| | | | `($X/h)` Burn rate (cost per hour) |
-| `󰄧` | nf-md-chart_bar | `f0127` | Token split: input / output |
-| | | | `(N tpm)` Tokens per minute |
+| Nerd Font | Codepoint | Description |
+|-----------|-----------|-------------|
+| `nf-md-sack` | `U+F0D2E` | Total session cost in USD |
+| | | `($X/h)` Burn rate (cost per hour) |
+| `nf-md-chart_bar` | `U+F0127` | Token split: input / output |
+| | | `(N tpm)` Tokens per minute |
 
 ## Line 6: Tips
 
-| Icon | Nerd Font | Codepoint | Description |
-|------|-----------|-----------|-------------|
-| `󰛩` | nf-md-lightbulb_on_outline | `f06e9` | Random tip, rotates every minute |
+| Nerd Font | Codepoint | Description |
+|-----------|-----------|-------------|
+| `nf-md-lightbulb_on_outline` | `U+F06E9` | Random tip, rotates every minute |
 
 ## Customization
 
