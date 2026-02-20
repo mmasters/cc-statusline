@@ -82,7 +82,7 @@ extract_json_string() {
 if [ "$HAS_JQ" -eq 1 ]; then
   current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // "unknown"' 2>/dev/null | sed "s|^$HOME|~|g")
   model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"' 2>/dev/null)
-  model_version=$(echo "$input" | jq -r '.model.version // ""' 2>/dev/null)
+
   session_id=$(echo "$input" | jq -r '.session_id // ""' 2>/dev/null)
   cc_version=$(echo "$input" | jq -r '.version // ""' 2>/dev/null)
   output_style=$(echo "$input" | jq -r '.output_style.name // ""' 2>/dev/null)
@@ -108,8 +108,7 @@ else
   # Extract model name from nested model object
   model_name=$(echo "$input" | grep -o '"model"[[:space:]]*:[[:space:]]*{[^}]*"display_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"display_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
   [ -z "$model_name" ] && model_name="Claude"
-  # Model version is in the model ID, not a separate field  
-  model_version=""  # Not available in Claude Code JSON
+
   session_id=$(extract_json_string "$input" "session_id" "")
   # CC version is at the root level
   cc_version=$(echo "$input" | grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
@@ -318,9 +317,9 @@ host_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;183m'; fi; }  #
 
 # ---- render statusline ----
 # Line 1: Directory, hostname, and git
-printf '💻 %s%s%s  📁 %s%s%s' "$(host_color)" "$host_name" "$(rst)" "$(dir_color)" "$current_dir" "$(rst)"
+printf '%s %s%s  %s %s%s' "$(host_color)" "$host_name" "$(rst)" "$(dir_color)" "$current_dir" "$(rst)"
 if [ -n "$git_branch" ]; then
-  printf '  🌿 %s%s%s' "$(git_color)" "$git_branch" "$(rst)"
+  printf '  %s %s%s' "$(git_color)" "$git_branch" "$(rst)"
   if [ -n "$git_changes" ]; then
     printf ' %s[%s]%s' "$(git_color)" "$git_changes" "$(rst)"
   fi
@@ -331,38 +330,35 @@ if [ -n "$git_branch" ]; then
     printf ' %s(%s)%s' "$(git_color)" "$git_last_commit" "$(rst)"
   fi
   if [ -n "$git_stash_count" ]; then
-    printf ' %s📦%s%s' "$(git_color)" "$git_stash_count" "$(rst)"
+    printf ' %s󰆗 %s%s' "$(git_color)" "$git_stash_count" "$(rst)"
   fi
 fi
 
 # Line 2: Model, version, style, MCP
-printf '\n🤖 %s%s%s' "$(model_color)" "$model_name" "$(rst)"
-if [ -n "$model_version" ] && [ "$model_version" != "null" ]; then
-  printf '  🏷 %s%s%s' "$(version_color)" "$model_version" "$(rst)"
-fi
+printf '\n%s󱜙 %s%s' "$(model_color)" "$model_name" "$(rst)"
 if [ -n "$cc_version" ] && [ "$cc_version" != "null" ]; then
-  printf '  📟 %sv%s%s' "$(cc_version_color)" "$cc_version" "$(rst)"
+  printf '  %s󱈤 v%s%s' "$(cc_version_color)" "$cc_version" "$(rst)"
 fi
 if [ -n "$output_style" ] && [ "$output_style" != "null" ]; then
-  printf '  💬 %s%s%s' "$(cc_version_color)" "$output_style" "$(rst)"
+  printf '  %s󰅺 %s%s' "$(cc_version_color)" "$output_style" "$(rst)"
 fi
 if [ -n "$mcp_server_total" ] && [ "$mcp_server_total" -gt 0 ] 2>/dev/null; then
-  printf '  ⚡%s%s MCP%s' "$(cc_version_color)" "$mcp_server_total" "$(rst)"
+  printf '  %s󱘖 %s MCP%s' "$(cc_version_color)" "$mcp_server_total" "$(rst)"
 fi
 if [ -n "$hooks_count" ] && [ "$hooks_count" -gt 0 ] 2>/dev/null; then
   hooks_label="hooks"; [ "$hooks_count" -eq 1 ] && hooks_label="hook"
-  printf '  ↪ %s%s %s%s' "$(cc_version_color)" "$hooks_count" "$hooks_label" "$(rst)"
+  printf '  %s󰛢 %s %s%s' "$(cc_version_color)" "$hooks_count" "$hooks_label" "$(rst)"
 fi
 
 # Line 3: Context and session time
 if [ -n "$context_pct" ]; then
   context_bar=$(progress_bar "$context_used_pct" 60)
-  printf '\n🧠 %sContext Used: %s [%s]%s' "$(context_color)" "$context_pct" "$context_bar" "$(rst)"
+  printf '\n%s󰧑 Context Used: %s [%s]%s' "$(context_color)" "$context_pct" "$context_bar" "$(rst)"
 else
-  printf '\n🧠 %sContext Used: 0%% [□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□]%s' "$(context_color)" "$(rst)"
+  printf '\n%s󰧑 Context Used: 0%% [□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□]%s' "$(context_color)" "$(rst)"
 fi
 if [ -n "$session_txt" ]; then
-  printf '\n⌛ %s%s%s %s[%s]%s' "$(session_color)" "$session_txt" "$(rst)" "$(session_color)" "$session_bar" "$(rst)"
+  printf '\n%s󰔛 %s%s %s[%s]%s' "$(session_color)" "$session_txt" "$(rst)" "$(session_color)" "$session_bar" "$(rst)"
 fi
 
 # Line 3: Cost and usage analytics
@@ -370,9 +366,9 @@ line3=""
 if [ -n "$cost_usd" ] && [[ "$cost_usd" =~ ^[0-9.]+$ ]]; then
   if [ -n "$cost_per_hour" ] && [[ "$cost_per_hour" =~ ^[0-9.]+$ ]]; then
     cost_per_hour_formatted=$(printf '%.2f' "$cost_per_hour")
-    line3="💰 $(cost_color)\$$(printf '%.2f' "$cost_usd")$(rst) ($(burn_color)\$${cost_per_hour_formatted}/h$(rst))"
+    line3="$(cost_color)󰴮 \$$(printf '%.2f' "$cost_usd")$(rst) ($(burn_color)\$${cost_per_hour_formatted}/h$(rst))"
   else
-    line3="💰 $(cost_color)\$$(printf '%.2f' "$cost_usd")$(rst)"
+    line3="$(cost_color)󰴮 \$$(printf '%.2f' "$cost_usd")$(rst)"
   fi
 fi
 if [ -n "$tot_tokens" ] && [[ "$tot_tokens" =~ ^[0-9]+$ ]]; then
@@ -387,15 +383,15 @@ if [ -n "$tot_tokens" ] && [[ "$tot_tokens" =~ ^[0-9]+$ ]]; then
   if [ -n "$tpm" ] && [[ "$tpm" =~ ^[0-9.]+$ ]]; then
     tpm_formatted=$(printf '%.0f' "$tpm")
     if [ -n "$line3" ]; then
-      line3="$line3  📊 $(usage_color)${token_split} (${tpm_formatted} tpm)$(rst)"
+      line3="$line3  $(usage_color)󰄧 ${token_split} (${tpm_formatted} tpm)$(rst)"
     else
-      line3="📊 $(usage_color)${token_split} (${tpm_formatted} tpm)$(rst)"
+      line3="$(usage_color)󰄧 ${token_split} (${tpm_formatted} tpm)$(rst)"
     fi
   else
     if [ -n "$line3" ]; then
-      line3="$line3  📊 $(usage_color)${token_split}$(rst)"
+      line3="$line3  $(usage_color)󰄧 ${token_split}$(rst)"
     else
-      line3="📊 $(usage_color)${token_split}$(rst)"
+      line3="$(usage_color)󰄧 ${token_split}$(rst)"
     fi
   fi
 fi
@@ -460,5 +456,5 @@ tips=(
 )
 tip_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;243m'; fi; }  # dim gray
 tip_index=$(( $(date +%s) / 60 % ${#tips[@]} ))  # Rotate every minute
-printf '\n💡 %s%s%s' "$(tip_color)" "${tips[$tip_index]}" "$(rst)"
+printf '\n%s󰛩 %s%s' "$(tip_color)" "${tips[$tip_index]}" "$(rst)"
 printf '\n'

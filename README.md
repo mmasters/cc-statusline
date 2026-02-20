@@ -1,8 +1,10 @@
 # Claude Code Statusline
 
-Custom statusline for Claude Code displaying session information, git status, and helpful tips.
+Custom statusline for Claude Code displaying session information, git status, and helpful tips. Uses [Nerd Font](https://www.nerdfonts.com/) icons for a clean, consistent look.
 
 Based on [cc-statusline](https://github.com/chongdashu/cc-statusline) by [@chongdashu](https://github.com/chongdashu).
+
+> **Requires a [Nerd Font](https://www.nerdfonts.com/font-downloads)** (e.g. FiraCode Nerd Font) set as your terminal font.
 
 ## Installation
 
@@ -33,32 +35,32 @@ The statusline displays 6 lines:
 
 ## Line 1: Hostname, Directory & Git
 
-| Element | Description |
-|---------|-------------|
-| 💻 | Computer hostname |
-| 📁 | Current working directory |
-| 🌿 | Git branch name |
-| `[+N ~N -N ●N]` | Uncommitted changes: +added, ~modified, -deleted, ●staged |
-| `↑N ↓N` | Commits ahead/behind remote |
-| `(Xh ago)` | Time since last commit |
-| 📦N | Stash count |
+| Icon | Nerd Font | Codepoint | Description |
+|------|-----------|-----------|-------------|
+| `` | nf-fa-home | `f015` | Computer hostname |
+| `` | nf-fa-folder | `f07b` | Current working directory |
+| `` | nf-dev-git_branch | `e725` | Git branch name |
+| | | | `[+N ~N -N ●N]` Uncommitted changes |
+| | | | `↑N ↓N` Commits ahead/behind remote |
+| | | | `(Xh ago)` Time since last commit |
+| `󰆗` | nf-md-content_save | `f0197` | Stash count |
 
 ## Line 2: Environment
 
-| Element | Description |
-|---------|-------------|
-| 🤖 | Model name (Opus 4.5, Sonnet, Haiku) |
-| 📟 | Claude Code version |
-| 💬 | Output style (default, concise, verbose) |
-| ⚡ | MCP servers count (from settings.json) |
-| ↪ | Hooks count (from settings.json) |
+| Icon | Nerd Font | Codepoint | Description |
+|------|-----------|-----------|-------------|
+| `󱜙` | nf-md-robot_happy | `f1719` | Model name (Opus 4.6, Sonnet, Haiku) |
+| `󱈤` | nf-md-tag_text | `f1224` | Claude Code version |
+| `󰅺` | nf-md-comment | `f017a` | Output style (default, concise, verbose) |
+| `󱘖` | nf-md-connection | `f1616` | MCP servers count |
+| `󰛢` | nf-md-link_variant | `f06e2` | Hooks count |
 
 ## Line 3: Context Usage
 
-| Element | Description |
-|---------|-------------|
-| 🧠 | Context used percentage with 60-char progress bar |
-| Progress bar | `■` = used, `□` = remaining |
+| Icon | Nerd Font | Codepoint | Description |
+|------|-----------|-----------|-------------|
+| `󰧑` | nf-md-brain | `f09d1` | Context used percentage with 60-char progress bar |
+| | | | `■` = used, `□` = remaining |
 
 **Colors change based on context used:**
 - Mint green: ≤50% used
@@ -67,26 +69,26 @@ The statusline displays 6 lines:
 
 ## Line 4: Session Timer
 
-| Element | Description |
-|---------|-------------|
-| ⌛ | Time until next session reset |
-| `(N%)` | Session usage percentage |
-| Progress bar | 10-char session progress bar |
+| Icon | Nerd Font | Codepoint | Description |
+|------|-----------|-----------|-------------|
+| `󰔛` | nf-md-timer_outline | `f051b` | Time until next session reset |
+| | | | `(N%)` Session usage percentage |
+| | | | 10-char session progress bar |
 
 ## Line 5: Cost & Tokens
 
-| Element | Description |
-|---------|-------------|
-| 💰 | Total session cost in USD |
-| `($X/h)` | Burn rate (cost per hour) |
-| 📊 | Token split: input / output |
-| `(N tpm)` | Tokens per minute |
+| Icon | Nerd Font | Codepoint | Description |
+|------|-----------|-----------|-------------|
+| `󰴮` | nf-md-sack | `f0d2e` | Total session cost in USD |
+| | | | `($X/h)` Burn rate (cost per hour) |
+| `󰄧` | nf-md-chart_bar | `f0127` | Token split: input / output |
+| | | | `(N tpm)` Tokens per minute |
 
 ## Line 6: Tips
 
-| Element | Description |
-|---------|-------------|
-| 💡 | Random tip, rotates every minute |
+| Icon | Nerd Font | Codepoint | Description |
+|------|-----------|-----------|-------------|
+| `󰛩` | nf-md-lightbulb_on_outline | `f06e9` | Random tip, rotates every minute |
 
 ## Customization
 
