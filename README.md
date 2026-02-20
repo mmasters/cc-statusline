@@ -35,7 +35,7 @@ The statusline displays 6 lines:
 
 | Element | Description |
 |---------|-------------|
-| 🖥️ | Computer hostname |
+| 💻 | Computer hostname |
 | 📁 | Current working directory |
 | 🌿 | Git branch name |
 | `[+N ~N -N ●N]` | Uncommitted changes: +added, ~modified, -deleted, ●staged |
@@ -50,8 +50,8 @@ The statusline displays 6 lines:
 | 🤖 | Model name (Opus 4.5, Sonnet, Haiku) |
 | 📟 | Claude Code version |
 | 💬 | Output style (default, concise, verbose) |
-| 🔌 | MCP servers count (from settings.json) |
-| 🪝 | Hooks count (from settings.json) |
+| ⚡ | MCP servers count (from settings.json) |
+| ↪ | Hooks count (from settings.json) |
 
 ## Line 3: Context Usage
 

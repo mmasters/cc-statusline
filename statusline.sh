@@ -318,7 +318,7 @@ host_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;183m'; fi; }  #
 
 # ---- render statusline ----
 # Line 1: Directory, hostname, and git
-printf '🖥️ %s%s%s  📁 %s%s%s' "$(host_color)" "$host_name" "$(rst)" "$(dir_color)" "$current_dir" "$(rst)"
+printf '💻 %s%s%s  📁 %s%s%s' "$(host_color)" "$host_name" "$(rst)" "$(dir_color)" "$current_dir" "$(rst)"
 if [ -n "$git_branch" ]; then
   printf '  🌿 %s%s%s' "$(git_color)" "$git_branch" "$(rst)"
   if [ -n "$git_changes" ]; then
@@ -338,7 +338,7 @@ fi
 # Line 2: Model, version, style, MCP
 printf '\n🤖 %s%s%s' "$(model_color)" "$model_name" "$(rst)"
 if [ -n "$model_version" ] && [ "$model_version" != "null" ]; then
-  printf '  🏷️ %s%s%s' "$(version_color)" "$model_version" "$(rst)"
+  printf '  🏷 %s%s%s' "$(version_color)" "$model_version" "$(rst)"
 fi
 if [ -n "$cc_version" ] && [ "$cc_version" != "null" ]; then
   printf '  📟 %sv%s%s' "$(cc_version_color)" "$cc_version" "$(rst)"
@@ -347,11 +347,11 @@ if [ -n "$output_style" ] && [ "$output_style" != "null" ]; then
   printf '  💬 %s%s%s' "$(cc_version_color)" "$output_style" "$(rst)"
 fi
 if [ -n "$mcp_server_total" ] && [ "$mcp_server_total" -gt 0 ] 2>/dev/null; then
-  printf '  🔌 %s%s MCP%s' "$(cc_version_color)" "$mcp_server_total" "$(rst)"
+  printf '  ⚡%s%s MCP%s' "$(cc_version_color)" "$mcp_server_total" "$(rst)"
 fi
 if [ -n "$hooks_count" ] && [ "$hooks_count" -gt 0 ] 2>/dev/null; then
   hooks_label="hooks"; [ "$hooks_count" -eq 1 ] && hooks_label="hook"
-  printf '  🪝 %s%s %s%s' "$(cc_version_color)" "$hooks_count" "$hooks_label" "$(rst)"
+  printf '  ↪ %s%s %s%s' "$(cc_version_color)" "$hooks_count" "$hooks_label" "$(rst)"
 fi
 
 # Line 3: Context and session time
