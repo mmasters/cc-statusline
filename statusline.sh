@@ -118,8 +118,9 @@ else
   if [ -f ~/.claude/settings.json ]; then
     mcp_server_total=$(grep -o '"enabledMcpjsonServers"[[:space:]]*:[[:space:]]*\[[^]]*\]' ~/.claude/settings.json | grep -o '"[^"]*"' | grep -v 'enabledMcpjsonServers' | wc -l | tr -d ' ')
     mcp_server_active="$mcp_server_total"
-    # Hooks count - count hook event types
-    hooks_count=$(grep -o '"hooks"[[:space:]]*:' ~/.claude/settings.json | wc -l | tr -d ' ')
+    # Hooks count - count event type keys directly under top-level "hooks" object
+    # Uses awk to track brace depth and only count keys at depth 1 (inside hooks:{})
+    hooks_count=$(awk 'BEGIN{f=0;d=0;c=0} /\"hooks\"[[:space:]]*:/{if(f==0){f=1;sub(/.*\"hooks\"[[:space:]]*:/,"")}} f==1{for(i=1;i<=length($0);i++){ch=substr($0,i,1);if(ch=="{")d++;if(ch=="}"){d--;if(d==0)f=2}};if(d==1){l=$0;while(match(l,/\"[^\"]+\"[[:space:]]*:/)){c++;l=substr(l,RSTART+RLENGTH)}}} END{print c}' ~/.claude/settings.json 2>/dev/null)
   else
     mcp_server_total=0
     mcp_server_active=0
