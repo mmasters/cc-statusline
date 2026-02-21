@@ -4,7 +4,7 @@ Custom statusline for Claude Code displaying session information, git status, an
 
 Based on [cc-statusline](https://github.com/chongdashu/cc-statusline) by [@chongdashu](https://github.com/chongdashu).
 
-> **Requires a [Nerd Font](https://www.nerdfonts.com/font-downloads)** (e.g. FiraCode Nerd Font) set as your terminal font.
+> **Requires [`jq`](https://jqlang.github.io/jq/)** and a **[Nerd Font](https://www.nerdfonts.com/font-downloads)** (e.g. FiraCode Nerd Font) set as your terminal font.
 
 ## Installation
 
@@ -94,16 +94,16 @@ The statusline displays 6 lines:
 
 ### Colors
 
-Color functions are defined near the top of the script:
+Color functions are defined throughout the script alongside their related sections:
 
 ```bash
 host_color()       # 38;5;183 - soft pink/mauve
 dir_color()        # 38;5;117 - sky blue
 git_color()        # 38;5;150 - soft green
 model_color()      # 38;5;147 - light purple
-version_color()    # 38;5;180 - soft yellow
 cc_version_color() # 38;5;249 - light gray
 context_color()    # 38;5;158 - mint green (dynamic)
+session_color()    # dynamic  - green/yellow/pink based on time remaining
 usage_color()      # 38;5;189 - lavender
 cost_color()       # 38;5;222 - light gold
 burn_color()       # 38;5;220 - bright gold
@@ -112,7 +112,7 @@ tip_color()        # 38;5;243 - dim gray
 
 ### Progress Bar
 
-To change the progress bar width, edit line ~260:
+To change the progress bar width, edit line ~258:
 
 ```bash
 context_bar=$(progress_bar "$context_used_pct" 60)  # Change 60 to desired width
@@ -122,7 +122,7 @@ Also update the fallback on the next line with matching empty squares.
 
 ### Progress Bar Characters
 
-To change fill/empty characters, edit the `progress_bar` function (~line 38):
+To change fill/empty characters, edit the `progress_bar` function (~line 36):
 
 ```bash
 for ((i=0; i<filled; i++)); do printf '■'; done   # Filled character
@@ -131,7 +131,7 @@ for ((i=0; i<empty; i++)); do printf '□'; done    # Empty character
 
 ### Tips
 
-Tips array starts around line 310. Add or remove tips as needed:
+Tips array starts around line 308. Add or remove tips as needed:
 
 ```bash
 tips=(
@@ -160,6 +160,5 @@ Tips rotate based on: `$(date +%s) / 60 % ${#tips[@]}`
 
 ## Dependencies
 
-- `jq` (required)
 - `git` (for git features)
 

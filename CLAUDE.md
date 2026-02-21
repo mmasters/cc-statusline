@@ -29,16 +29,16 @@ The script is deployed to `~/.claude/statusline.sh` and configured via `~/.claud
 | Lines     | Section                                                    |
 |-----------|------------------------------------------------------------|
 | 1–15      | Header, version, input capture, jq requirement check       |
-| 17–30     | Color helper functions (ANSI 256-color)                    |
-| 32–47     | Time helpers, progress bar, git utilities                  |
-| 49–60     | Data extraction: directory, model, MCP, hooks              |
-| 62–122    | Git integration: branch, changes, ahead/behind, stash      |
-| 124–156   | Context window percentage calculation                      |
-| 158–197   | Usage colors, cost, token counts, burn rate, tokens/minute |
-| 199–217   | Session reset time (5-hour rolling window)                 |
-| 219–221   | Hostname detection                                         |
-| 223–307   | Rendering: assembles and prints the 6 output lines         |
-| 309–365   | Tips array (50 entries) and final output                   |
+| 17–28     | Color helper functions (ANSI 256-color)                    |
+| 30–45     | Time helpers, progress bar, git utilities                  |
+| 47–58     | Data extraction: directory, model, MCP, hooks              |
+| 60–120    | Git integration: branch, changes, ahead/behind, stash      |
+| 122–154   | Context window percentage calculation                      |
+| 156–195   | Usage colors, cost, token counts, burn rate, tokens/minute |
+| 197–215   | Session reset time (5-hour rolling window)                 |
+| 217–219   | Hostname detection                                         |
+| 221–305   | Rendering: assembles and prints the 6 output lines         |
+| 307–363   | Tips array (50 entries) and final output                   |
 
 ### Key Design Patterns
 
@@ -71,7 +71,7 @@ To change an icon: look up the codepoint on the [Nerd Font cheat sheet](https://
 
 ### Customization Points
 
-- **Colors:** Edit the named color functions (e.g., `dir_color()`, `model_color()`) near line 25.
-- **Icons:** Nerd Font glyphs are embedded directly in printf statements in the render section (~line 225+). See icon table above.
-- **Progress bar:** Width set in render section (~line 260), characters in `progress_bar()` function (~line 38).
-- **Tips:** Array starting ~line 310. Rotation speed controlled by divisor in `$(date +%s) / 60`.
+- **Colors:** Edit the named color functions (e.g., `dir_color()`, `model_color()`) — defined throughout the script alongside their related sections.
+- **Icons:** Nerd Font glyphs are embedded directly in printf statements in the render section (~line 223+). See icon table above.
+- **Progress bar:** Width set in render section (~line 258), characters in `progress_bar()` function (~line 36).
+- **Tips:** Array starting ~line 308. Rotation speed controlled by divisor in `$(date +%s) / 60`.
