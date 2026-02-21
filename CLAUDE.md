@@ -47,6 +47,7 @@ The script is deployed to `~/.claude/statusline.sh` and configured via `~/.claud
 - **Dynamic colors:** Context bar color shifts green→peach→red based on usage %. Session timer color shifts similarly.
 - **Data sources:** Session JSON (stdin) for model/context/cost, `~/.claude/settings.json` for MCP/hooks counts, `git` commands for repo status, `hostname` for computer name.
 - **Nested JSON caution:** When parsing `~/.claude/settings.json` without jq, beware of key names that appear at multiple nesting depths. The `"hooks"` key exists both as a top-level config key and inside each hook rule. The bash fallback uses awk with brace-depth tracking to count only the top-level event type keys (e.g., `"SessionEnd"`, `"PreToolUse"`), not the nested `"hooks"` arrays within rules.
+- **`grep -c` exit codes:** `grep -c` returns exit code 1 when there are no matches, even though it still prints `0` to stdout. Using `|| echo 0` as a fallback causes double output (`"0\n0"`), which breaks integer comparisons. Use `|| true` instead to suppress the exit code without extra output.
 
 ### Icons
 

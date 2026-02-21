@@ -144,10 +144,10 @@ if git rev-parse --git-dir >/dev/null 2>&1; then
   # Count uncommitted changes
   git_status=$(git status --porcelain 2>/dev/null)
   if [ -n "$git_status" ]; then
-    added=$(echo "$git_status" | grep -c '^??' || echo 0)
-    modified=$(echo "$git_status" | grep -c '^ M\|^M \|^MM\|^AM' || echo 0)
-    deleted=$(echo "$git_status" | grep -c '^ D\|^D ' || echo 0)
-    staged=$(echo "$git_status" | grep -c '^[MARCD]' || echo 0)
+    added=$(echo "$git_status" | grep -c '^??' || true)
+    modified=$(echo "$git_status" | grep -c '^ M\|^M \|^MM\|^AM' || true)
+    deleted=$(echo "$git_status" | grep -c '^ D\|^D ' || true)
+    staged=$(echo "$git_status" | grep -c '^[MARCD]' || true)
 
     changes_parts=""
     [ "$added" -gt 0 ] && changes_parts="+${added}"
