@@ -112,7 +112,7 @@ tip_color()        # 38;5;243 - dim gray
 
 ### Progress Bar
 
-To change the progress bar width, edit line ~375:
+To change the progress bar width, edit line ~260:
 
 ```bash
 context_bar=$(progress_bar "$context_used_pct" 60)  # Change 60 to desired width
@@ -122,7 +122,7 @@ Also update the fallback on the next line with matching empty squares.
 
 ### Progress Bar Characters
 
-To change fill/empty characters, edit the `progress_bar` function (~line 50):
+To change fill/empty characters, edit the `progress_bar` function (~line 38):
 
 ```bash
 for ((i=0; i<filled; i++)); do printf '■'; done   # Filled character
@@ -131,7 +131,7 @@ for ((i=0; i<empty; i++)); do printf '□'; done    # Empty character
 
 ### Tips
 
-Tips array starts around line 430. Add or remove tips as needed:
+Tips array starts around line 310. Add or remove tips as needed:
 
 ```bash
 tips=(
@@ -145,7 +145,7 @@ Tips rotate based on: `$(date +%s) / 60 % ${#tips[@]}`
 
 ### Adding New Elements
 
-1. **Extract data** in the appropriate section (jq for JSON, grep for bash fallback)
+1. **Extract data** in the appropriate section (jq for JSON)
 2. **Add display** in the render section using printf
 3. **Use color functions** for consistent styling
 
@@ -160,6 +160,6 @@ Tips rotate based on: `$(date +%s) / 60 % ${#tips[@]}`
 
 ## Dependencies
 
-- `jq` (optional, has bash fallback)
+- `jq` (required)
 - `git` (for git features)
 

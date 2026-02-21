@@ -13,7 +13,7 @@ Based on the npm package `@chongdashu/cc-statusline` v1.4.0. Source: https://git
 This is a standalone bash script with no build system, test suite, or linter. To test changes, run it with sample JSON piped to stdin:
 
 ```bash
-echo '{"cwd":"/tmp","model":"claude-opus-4-6","contextWindow":{"used":0.15,"total":200000}}' | bash statusline.sh
+echo '{"workspace":{"current_dir":"/tmp"},"model":{"display_name":"Claude Opus 4.6"},"context_window":{"context_window_size":200000,"current_usage":{"input_tokens":1000,"cache_creation_input_tokens":500,"cache_read_input_tokens":200},"total_input_tokens":1700,"total_output_tokens":300},"cost":{"total_cost_usd":0.05,"total_duration_ms":60000},"version":"1.0.50","output_style":{"name":"concise"}}' | bash statusline.sh
 ```
 
 The script is deployed to `~/.claude/statusline.sh` and configured via `~/.claude/settings.json`.
