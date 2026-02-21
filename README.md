@@ -4,7 +4,7 @@ Custom statusline for Claude Code displaying session information, git status, an
 
 Based on [cc-statusline](https://github.com/chongdashu/cc-statusline) by [@chongdashu](https://github.com/chongdashu).
 
-> **Requires [`jq`](https://jqlang.github.io/jq/)** and a **[Nerd Font](https://www.nerdfonts.com/font-downloads)** (e.g. FiraCode Nerd Font) set as your terminal font.
+> **Requires [`jq`](https://jqlang.github.io/jq/)**, **[`git`](https://git-scm.com/)** (for git features), and a **[Nerd Font](https://www.nerdfonts.com/font-downloads)** (e.g. FiraCode Nerd Font) set as your terminal font.
 
 ## Installation
 
@@ -158,7 +158,4 @@ Tips rotate based on: `$(date +%s) / 60 % ${#tips[@]}`
 | Git info | Direct git commands |
 | MCP servers, hooks | `~/.claude/settings.json` |
 
-## Dependencies
-
-- `git` (for git features)
 
