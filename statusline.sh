@@ -8,10 +8,10 @@ STATUSLINE_VERSION="1.0.1"
 
 input=$(cat)
 
-# ---- check jq availability ----
-HAS_JQ=0
-if command -v jq >/dev/null 2>&1; then
-  HAS_JQ=1
+# ---- require jq ----
+if ! command -v jq >/dev/null 2>&1; then
+  echo "Error: jq is required but not found. Install it with: brew install jq (macOS) or apt install jq (Linux)" >&2
+  exit 1
 fi
 
 # ---- color helpers (force colors for Claude Code) ----
@@ -46,87 +46,18 @@ progress_bar() {
 # git utilities
 num_or_zero() { v="$1"; [[ "$v" =~ ^[0-9]+$ ]] && echo "$v" || echo 0; }
 
-# ---- JSON extraction utilities ----
-# Pure bash JSON value extractor (fallback when jq not available)
-extract_json_string() {
-  local json="$1"
-  local key="$2"
-  local default="${3:-}"
-  
-  # For nested keys like workspace.current_dir, get the last part
-  local field="${key##*.}"
-  field="${field%% *}"  # Remove any jq operators
-  
-  # Try to extract string value (quoted)
-  local value=$(echo "$json" | grep -o "\"\${field}\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" | head -1 | sed 's/.*:[[:space:]]*"\([^"]*\)".*/\1/')
-  
-  # Convert escaped backslashes to forward slashes for Windows paths
-  if [ -n "$value" ]; then
-    value=$(echo "$value" | sed 's/\\\\/\//g')
-  fi
-  
-  # If no string value found, try to extract number value (unquoted)
-  if [ -z "$value" ] || [ "$value" = "null" ]; then
-    value=$(echo "$json" | grep -o "\"\${field}\"[[:space:]]*:[[:space:]]*[0-9.]\+" | head -1 | sed 's/.*:[[:space:]]*\([0-9.]\+\).*/\1/')
-  fi
-  
-  # Return value or default
-  if [ -n "$value" ] && [ "$value" != "null" ]; then
-    echo "$value"
-  else
-    echo "$default"
-  fi
-}
-
 # ---- basics ----
-if [ "$HAS_JQ" -eq 1 ]; then
-  current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // "unknown"' 2>/dev/null | sed "s|^$HOME|~|g")
-  model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"' 2>/dev/null)
+current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // "unknown"' 2>/dev/null | sed "s|^$HOME|~|g")
+model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"' 2>/dev/null)
 
-  session_id=$(echo "$input" | jq -r '.session_id // ""' 2>/dev/null)
-  cc_version=$(echo "$input" | jq -r '.version // ""' 2>/dev/null)
-  output_style=$(echo "$input" | jq -r '.output_style.name // ""' 2>/dev/null)
-  # Read MCP servers from settings file
-  mcp_server_total=$(jq -r '.enabledMcpjsonServers | length // 0' ~/.claude/settings.json 2>/dev/null)
-  mcp_server_active="$mcp_server_total"  # Assume all enabled are active
-  # Read hooks count from settings file
-  hooks_count=$(jq -r '.hooks | keys | length // 0' ~/.claude/settings.json 2>/dev/null)
-else
-  # Bash fallback for JSON extraction
-  # Extract current_dir from workspace object - look for the pattern workspace":{"current_dir":"..."}
-  current_dir=$(echo "$input" | grep -o '"workspace"[[:space:]]*:[[:space:]]*{[^}]*"current_dir"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"current_dir"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | sed 's/\\\\/\//g')
-  
-  # Fall back to cwd if workspace extraction failed
-  if [ -z "$current_dir" ] || [ "$current_dir" = "null" ]; then
-    current_dir=$(echo "$input" | grep -o '"cwd"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"cwd"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/' | sed 's/\\\\/\//g')
-  fi
-  
-  # Fallback to unknown if all extraction failed
-  [ -z "$current_dir" ] && current_dir="unknown"
-  current_dir=$(echo "$current_dir" | sed "s|^$HOME|~|g")
-  
-  # Extract model name from nested model object
-  model_name=$(echo "$input" | grep -o '"model"[[:space:]]*:[[:space:]]*{[^}]*"display_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"display_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
-  [ -z "$model_name" ] && model_name="Claude"
-
-  session_id=$(extract_json_string "$input" "session_id" "")
-  # CC version is at the root level
-  cc_version=$(echo "$input" | grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
-  # Output style is nested
-  output_style=$(echo "$input" | grep -o '"output_style"[[:space:]]*:[[:space:]]*{[^}]*"name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
-  # MCP server count - read from settings file
-  if [ -f ~/.claude/settings.json ]; then
-    mcp_server_total=$(grep -o '"enabledMcpjsonServers"[[:space:]]*:[[:space:]]*\[[^]]*\]' ~/.claude/settings.json | grep -o '"[^"]*"' | grep -v 'enabledMcpjsonServers' | wc -l | tr -d ' ')
-    mcp_server_active="$mcp_server_total"
-    # Hooks count - count event type keys directly under top-level "hooks" object
-    # Uses awk to track brace depth and only count keys at depth 1 (inside hooks:{})
-    hooks_count=$(awk 'BEGIN{f=0;d=0;c=0} /\"hooks\"[[:space:]]*:/{if(f==0){f=1;sub(/.*\"hooks\"[[:space:]]*:/,"")}} f==1{for(i=1;i<=length($0);i++){ch=substr($0,i,1);if(ch=="{")d++;if(ch=="}"){d--;if(d==0)f=2}};if(d==1){l=$0;while(match(l,/\"[^\"]+\"[[:space:]]*:/)){c++;l=substr(l,RSTART+RLENGTH)}}} END{print c}' ~/.claude/settings.json 2>/dev/null)
-  else
-    mcp_server_total=0
-    mcp_server_active=0
-    hooks_count=0
-  fi
-fi
+session_id=$(echo "$input" | jq -r '.session_id // ""' 2>/dev/null)
+cc_version=$(echo "$input" | jq -r '.version // ""' 2>/dev/null)
+output_style=$(echo "$input" | jq -r '.output_style.name // ""' 2>/dev/null)
+# Read MCP servers from settings file
+mcp_server_total=$(jq -r '.enabledMcpjsonServers | length // 0' ~/.claude/settings.json 2>/dev/null)
+mcp_server_active="$mcp_server_total"  # Assume all enabled are active
+# Read hooks count from settings file
+hooks_count=$(jq -r '.hooks | keys | length // 0' ~/.claude/settings.json 2>/dev/null)
 
 # ---- git colors ----
 git_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;150m'; fi; }  # soft green
@@ -195,34 +126,32 @@ context_pct=""
 context_remaining_pct=""
 context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;158m'; fi; }  # default mint green
 
-if [ "$HAS_JQ" -eq 1 ]; then
-  # Get context window size and current usage from native Claude Code input
-  CONTEXT_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 200000' 2>/dev/null)
-  USAGE=$(echo "$input" | jq '.context_window.current_usage' 2>/dev/null)
+# Get context window size and current usage from native Claude Code input
+CONTEXT_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 200000' 2>/dev/null)
+USAGE=$(echo "$input" | jq '.context_window.current_usage' 2>/dev/null)
 
-  if [ "$USAGE" != "null" ] && [ -n "$USAGE" ]; then
-    # Calculate current context from current_usage fields
-    # Formula: input_tokens + cache_creation_input_tokens + cache_read_input_tokens
-    CURRENT_TOKENS=$(echo "$USAGE" | jq '(.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0)' 2>/dev/null)
+if [ "$USAGE" != "null" ] && [ -n "$USAGE" ]; then
+  # Calculate current context from current_usage fields
+  # Formula: input_tokens + cache_creation_input_tokens + cache_read_input_tokens
+  CURRENT_TOKENS=$(echo "$USAGE" | jq '(.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0)' 2>/dev/null)
 
-    if [ -n "$CURRENT_TOKENS" ] && [ "$CURRENT_TOKENS" -gt 0 ] 2>/dev/null; then
-      context_used_pct=$(( CURRENT_TOKENS * 100 / CONTEXT_SIZE ))
-      context_remaining_pct=$(( 100 - context_used_pct ))
-      # Clamp to valid range
-      (( context_remaining_pct < 0 )) && context_remaining_pct=0
-      (( context_remaining_pct > 100 )) && context_remaining_pct=100
+  if [ -n "$CURRENT_TOKENS" ] && [ "$CURRENT_TOKENS" -gt 0 ] 2>/dev/null; then
+    context_used_pct=$(( CURRENT_TOKENS * 100 / CONTEXT_SIZE ))
+    context_remaining_pct=$(( 100 - context_used_pct ))
+    # Clamp to valid range
+    (( context_remaining_pct < 0 )) && context_remaining_pct=0
+    (( context_remaining_pct > 100 )) && context_remaining_pct=100
 
-      # Set color based on used percentage
-      if [ "$context_used_pct" -ge 71 ]; then
-        context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;203m'; fi; }  # coral red
-      elif [ "$context_used_pct" -ge 51 ]; then
-        context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;215m'; fi; }  # peach
-      else
-        context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;158m'; fi; }  # mint green
-      fi
-
-      context_pct="${context_used_pct}%"
+    # Set color based on used percentage
+    if [ "$context_used_pct" -ge 71 ]; then
+      context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;203m'; fi; }  # coral red
+    elif [ "$context_used_pct" -ge 51 ]; then
+      context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;215m'; fi; }  # peach
+    else
+      context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;158m'; fi; }  # mint green
     fi
+
+    context_pct="${context_used_pct}%"
   fi
 fi
 
@@ -243,53 +172,28 @@ session_txt=""; session_pct=0; session_bar=""
 cost_usd=""; cost_per_hour=""; tpm=""; tot_tokens=""
 
 # Extract cost and token data from Claude Code's native input
-if [ "$HAS_JQ" -eq 1 ]; then
-  # Cost data
-  cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // empty' 2>/dev/null)
-  total_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // empty' 2>/dev/null)
+# Cost data
+cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // empty' 2>/dev/null)
+total_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // empty' 2>/dev/null)
 
-  # Calculate burn rate ($/hour) from cost and duration
-  if [ -n "$cost_usd" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
-    cost_per_hour=$(echo "$cost_usd $total_duration_ms" | awk '{printf "%.2f", $1 * 3600000 / $2}')
-  fi
+# Calculate burn rate ($/hour) from cost and duration
+if [ -n "$cost_usd" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
+  cost_per_hour=$(echo "$cost_usd $total_duration_ms" | awk '{printf "%.2f", $1 * 3600000 / $2}')
+fi
 
-  # Token data from native context_window (no ccusage needed)
-  input_tokens=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0' 2>/dev/null)
-  output_tokens=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0' 2>/dev/null)
+# Token data from native context_window
+input_tokens=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0' 2>/dev/null)
+output_tokens=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0' 2>/dev/null)
 
-  if [ "$input_tokens" != "null" ] && [ "$output_tokens" != "null" ]; then
-    tot_tokens=$(( input_tokens + output_tokens ))
-    [ "$tot_tokens" -eq 0 ] && tot_tokens=""
-  fi
+if [ "$input_tokens" != "null" ] && [ "$output_tokens" != "null" ]; then
+  tot_tokens=$(( input_tokens + output_tokens ))
+  [ "$tot_tokens" -eq 0 ] && tot_tokens=""
+fi
 
-  # Calculate tokens per minute from native data
-  if [ -n "$tot_tokens" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
-    # Convert ms to minutes and calculate rate
-    tpm=$(echo "$tot_tokens $total_duration_ms" | awk '{if ($2 > 0) printf "%.0f", $1 * 60000 / $2; else print ""}')
-  fi
-else
-  # Bash fallback for cost extraction
-  cost_usd=$(echo "$input" | grep -o '"total_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' | sed 's/.*:[[:space:]]*\([0-9.]*\).*/\1/')
-  total_duration_ms=$(echo "$input" | grep -o '"total_duration_ms"[[:space:]]*:[[:space:]]*[0-9]*' | sed 's/.*:[[:space:]]*\([0-9]*\).*/\1/')
-
-  # Calculate burn rate ($/hour) from cost and duration
-  if [ -n "$cost_usd" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
-    cost_per_hour=$(echo "$cost_usd $total_duration_ms" | awk '{printf "%.2f", $1 * 3600000 / $2}')
-  fi
-
-  # Token data from native context_window (bash fallback)
-  input_tokens=$(echo "$input" | grep -o '"total_input_tokens"[[:space:]]*:[[:space:]]*[0-9]*' | sed 's/.*:[[:space:]]*\([0-9]*\).*/\1/')
-  output_tokens=$(echo "$input" | grep -o '"total_output_tokens"[[:space:]]*:[[:space:]]*[0-9]*' | sed 's/.*:[[:space:]]*\([0-9]*\).*/\1/')
-
-  if [ -n "$input_tokens" ] && [ -n "$output_tokens" ]; then
-    tot_tokens=$(( input_tokens + output_tokens ))
-    [ "$tot_tokens" -eq 0 ] && tot_tokens=""
-  fi
-
-  # Calculate tokens per minute from native data
-  if [ -n "$tot_tokens" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
-    tpm=$(echo "$tot_tokens $total_duration_ms" | awk '{if ($2 > 0) printf "%.0f", $1 * 60000 / $2; else print ""}')
-  fi
+# Calculate tokens per minute from native data
+if [ -n "$tot_tokens" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
+  # Convert ms to minutes and calculate rate
+  tpm=$(echo "$tot_tokens $total_duration_ms" | awk '{if ($2 > 0) printf "%.0f", $1 * 60000 / $2; else print ""}')
 fi
 
 # Session reset time (5-hour rolling window, no external tools needed)

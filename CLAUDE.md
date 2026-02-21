@@ -22,32 +22,29 @@ The script is deployed to `~/.claude/statusline.sh` and configured via `~/.claud
 
 **Input:** JSON from Claude Code piped via stdin
 **Output:** 6 lines of ANSI-colored text
-**Dependencies:** `jq` (optional, has pure-bash fallback), `git` (optional), Nerd Font (terminal font)
+**Dependencies:** `jq` (required), `git` (optional), Nerd Font (terminal font)
 
 ### Script Structure (statusline.sh)
 
 | Lines     | Section                                                    |
 |-----------|------------------------------------------------------------|
-| 1–20      | Header, version, input capture, jq detection               |
-| 21–32     | Color helper functions (ANSI 256-color)                    |
-| 33–80     | JSON extraction utilities (jq primary, grep/sed fallback)  |
-| 83–130    | Data extraction: directory, model, MCP, hooks              |
-| 132–192   | Git integration: branch, changes, ahead/behind, stash      |
-| 194–228   | Context window percentage calculation                      |
-| 230–294   | Cost, token counts, burn rate, tokens/minute               |
-| 296–314   | Session reset time (5-hour rolling window)                 |
-| 315–317   | Hostname detection                                         |
-| 319–406   | Rendering: assembles and prints the 6 output lines         |
-| 408–464   | Tips array (45 entries) and final output                   |
+| 1–15      | Header, version, input capture, jq requirement check       |
+| 17–30     | Color helper functions (ANSI 256-color)                    |
+| 32–47     | Time helpers, progress bar, git utilities                  |
+| 49–60     | Data extraction: directory, model, MCP, hooks              |
+| 62–122    | Git integration: branch, changes, ahead/behind, stash      |
+| 124–156   | Context window percentage calculation                      |
+| 158–197   | Usage colors, cost, token counts, burn rate, tokens/minute |
+| 199–217   | Session reset time (5-hour rolling window)                 |
+| 219–221   | Hostname detection                                         |
+| 223–307   | Rendering: assembles and prints the 6 output lines         |
+| 309–365   | Tips array (50 entries) and final output                   |
 
 ### Key Design Patterns
 
-- **Graceful degradation:** Every feature has a fallback. jq unavailable → bash parsing. Git unavailable → skip git line. Missing JSON fields → sensible defaults.
-- **Dual JSON parsing:** `HAS_JQ` flag controls whether `jq` or `extract_json_string()` (grep/sed) is used.
+- **Graceful degradation:** Git unavailable → skip git line. Missing JSON fields → sensible defaults via jq's `//` operator.
 - **Dynamic colors:** Context bar color shifts green→peach→red based on usage %. Session timer color shifts similarly.
 - **Data sources:** Session JSON (stdin) for model/context/cost, `~/.claude/settings.json` for MCP/hooks counts, `git` commands for repo status, `hostname` for computer name.
-- **Nested JSON caution:** When parsing `~/.claude/settings.json` without jq, beware of key names that appear at multiple nesting depths. The `"hooks"` key exists both as a top-level config key and inside each hook rule. The bash fallback uses awk with brace-depth tracking to count only the top-level event type keys (e.g., `"SessionEnd"`, `"PreToolUse"`), not the nested `"hooks"` arrays within rules.
-- **`grep -c` exit codes:** `grep -c` returns exit code 1 when there are no matches, even though it still prints `0` to stdout. Using `|| echo 0` as a fallback causes double output (`"0\n0"`), which breaks integer comparisons. Use `|| true` instead to suppress the exit code without extra output.
 
 ### Icons
 
@@ -75,6 +72,6 @@ To change an icon: look up the codepoint on the [Nerd Font cheat sheet](https://
 ### Customization Points
 
 - **Colors:** Edit the named color functions (e.g., `dir_color()`, `model_color()`) near line 25.
-- **Icons:** Nerd Font glyphs are embedded directly in printf statements in the render section (~line 320+). See icon table above.
-- **Progress bar:** Width set in render section (~line 375), characters in `progress_bar()` function (~line 50).
-- **Tips:** Array starting ~line 430. Rotation speed controlled by divisor in `$(date +%s) / 60`.
+- **Icons:** Nerd Font glyphs are embedded directly in printf statements in the render section (~line 225+). See icon table above.
+- **Progress bar:** Width set in render section (~line 260), characters in `progress_bar()` function (~line 38).
+- **Tips:** Array starting ~line 310. Rotation speed controlled by divisor in `$(date +%s) / 60`.
