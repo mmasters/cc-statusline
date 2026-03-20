@@ -219,10 +219,11 @@ host_name=$(hostname -s 2>/dev/null || hostname 2>/dev/null || echo "unknown")
 host_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;183m'; fi; }  # soft pink/mauve
 
 # ---- render statusline ----
-# Line 1: Directory, hostname, and git
+# Line 1: Hostname and directory
 printf '%s %s%s  %s %s%s' "$(host_color)" "$host_name" "$(rst)" "$(dir_color)" "$current_dir" "$(rst)"
+# Line 2: Git info
 if [ -n "$git_branch" ]; then
-  printf '  %s %s%s' "$(git_color)" "$git_branch" "$(rst)"
+  printf '\n%s %s%s' "$(git_color)" "$git_branch" "$(rst)"
   if [ -n "$git_changes" ]; then
     printf ' %s[%s]%s' "$(git_color)" "$git_changes" "$(rst)"
   fi
@@ -237,7 +238,7 @@ if [ -n "$git_branch" ]; then
   fi
 fi
 
-# Line 2: Model, version, style, MCP
+# Line 3: Model, version, style, MCP
 printf '\n%s󱜙 %s%s' "$(model_color)" "$model_name" "$(rst)"
 if [ -n "$cc_version" ] && [ "$cc_version" != "null" ]; then
   printf '  %s󱈤 v%s%s' "$(cc_version_color)" "$cc_version" "$(rst)"
@@ -253,18 +254,18 @@ if [ -n "$hooks_count" ] && [ "$hooks_count" -gt 0 ] 2>/dev/null; then
   printf '  %s󰛢 %s %s%s' "$(cc_version_color)" "$hooks_count" "$hooks_label" "$(rst)"
 fi
 
-# Line 3: Context and session time
+# Line 4: Context and session time
 if [ -n "$context_pct" ]; then
-  context_bar=$(progress_bar "$context_used_pct" 60)
+  context_bar=$(progress_bar "$context_used_pct" 50)
   printf '\n%s󰧑 Context Used: %s [%s]%s' "$(context_color)" "$context_pct" "$context_bar" "$(rst)"
 else
-  printf '\n%s󰧑 Context Used: 0%% [□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□]%s' "$(context_color)" "$(rst)"
+  printf '\n%s󰧑 Context Used: 0%% [□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□]%s' "$(context_color)" "$(rst)"
 fi
 if [ -n "$session_txt" ]; then
   printf '\n%s󰔛 %s%s %s[%s]%s' "$(session_color)" "$session_txt" "$(rst)" "$(session_color)" "$session_bar" "$(rst)"
 fi
 
-# Line 3: Cost and usage analytics
+# Line 5: Cost and usage analytics
 line3=""
 if [ -n "$cost_usd" ] && [[ "$cost_usd" =~ ^[0-9.]+$ ]]; then
   if [ -n "$cost_per_hour" ] && [[ "$cost_per_hour" =~ ^[0-9.]+$ ]]; then

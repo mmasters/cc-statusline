@@ -29,23 +29,28 @@ Then add the following to your `~/.claude/settings.json`:
 
 ## Layout
 
-The statusline displays 6 lines:
+The statusline displays 7 lines:
 
 ![statusline preview](statusline-preview.png)
 
-## Line 1: Hostname, Directory & Git
+## Line 1: Hostname & Directory
 
 | Nerd Font | Codepoint | Description |
 |-----------|-----------|-------------|
 | `nf-fa-home` | `U+F015` | Computer hostname |
 | `nf-fa-folder` | `U+F07B` | Current working directory |
+
+## Line 2: Git
+
+| Nerd Font | Codepoint | Description |
+|-----------|-----------|-------------|
 | `nf-dev-git_branch` | `U+E725` | Git branch name |
 | | | `[+N ~N -N ●N]` Uncommitted changes |
 | | | `↑N ↓N` Commits ahead/behind remote |
 | | | `(Xh ago)` Time since last commit |
 | `nf-md-content_save` | `U+F0197` | Stash count |
 
-## Line 2: Environment
+## Line 3: Environment
 
 | Nerd Font | Codepoint | Description |
 |-----------|-----------|-------------|
@@ -55,11 +60,11 @@ The statusline displays 6 lines:
 | `nf-md-connection` | `U+F1616` | MCP servers count |
 | `nf-md-link_variant` | `U+F06E2` | Hooks count |
 
-## Line 3: Context Usage
+## Line 4: Context Usage
 
 | Nerd Font | Codepoint | Description |
 |-----------|-----------|-------------|
-| `nf-md-brain` | `U+F09D1` | Context used percentage with 60-char progress bar |
+| `nf-md-brain` | `U+F09D1` | Context used percentage with 50-char progress bar |
 | | | `■` = used, `□` = remaining |
 
 **Colors change based on context used:**
@@ -67,7 +72,7 @@ The statusline displays 6 lines:
 - Peach: 51-70% used
 - Coral red: ≥71% used
 
-## Line 4: Session Timer
+## Line 5: Session Timer
 
 | Nerd Font | Codepoint | Description |
 |-----------|-----------|-------------|
@@ -75,7 +80,7 @@ The statusline displays 6 lines:
 | | | `(N%)` Session usage percentage |
 | | | 10-char session progress bar |
 
-## Line 5: Cost & Tokens
+## Line 6: Cost & Tokens
 
 | Nerd Font | Codepoint | Description |
 |-----------|-----------|-------------|
@@ -84,7 +89,7 @@ The statusline displays 6 lines:
 | `nf-md-chart_bar` | `U+F0127` | Token split: input / output |
 | | | `(N tpm)` Tokens per minute |
 
-## Line 6: Tips
+## Line 7: Tips
 
 | Nerd Font | Codepoint | Description |
 |-----------|-----------|-------------|
@@ -112,10 +117,10 @@ tip_color()        # 38;5;243 - dim gray
 
 ### Progress Bar
 
-To change the progress bar width, edit line ~258:
+To change the progress bar width, edit line ~259:
 
 ```bash
-context_bar=$(progress_bar "$context_used_pct" 60)  # Change 60 to desired width
+context_bar=$(progress_bar "$context_used_pct" 50)  # Change 50 to desired width
 ```
 
 Also update the fallback on the next line with matching empty squares.

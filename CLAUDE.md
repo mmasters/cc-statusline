@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A custom Claude Code statusline — a single bash script (`statusline.sh`) that transforms Claude Code's JSON session data into a 6-line colored terminal display showing hostname, directory/git info, environment, context usage, session timer, cost/tokens, and rotating tips. Uses Nerd Font icons (requires a patched Nerd Font like FiraCode Nerd Font Mono as terminal font).
+A custom Claude Code statusline — a single bash script (`statusline.sh`) that transforms Claude Code's JSON session data into a 7-line colored terminal display showing hostname, directory, git info, environment, context usage, session timer, cost/tokens, and rotating tips. Uses Nerd Font icons (requires a patched Nerd Font like FiraCode Nerd Font Mono as terminal font).
 
 Based on the npm package `@chongdashu/cc-statusline` v1.4.0. Source: https://github.com/chongdashu/cc-statusline
 
@@ -21,7 +21,7 @@ The script is deployed to `~/.claude/statusline.sh` and configured via `~/.claud
 ## Architecture
 
 **Input:** JSON from Claude Code piped via stdin
-**Output:** 6 lines of ANSI-colored text
+**Output:** 7 lines of ANSI-colored text
 **Dependencies:** `jq` (required), `git` (optional), Nerd Font (terminal font)
 
 ### Script Structure (statusline.sh)
@@ -37,8 +37,8 @@ The script is deployed to `~/.claude/statusline.sh` and configured via `~/.claud
 | 156–195   | Usage colors, cost, token counts, burn rate, tokens/minute |
 | 197–215   | Session reset time (5-hour rolling window)                 |
 | 217–219   | Hostname detection                                         |
-| 221–305   | Rendering: assembles and prints the 6 output lines         |
-| 307–363   | Tips array (50 entries) and final output                   |
+| 221–306   | Rendering: assembles and prints the 7 output lines         |
+| 308–364   | Tips array (50 entries) and final output                   |
 
 ### Key Design Patterns
 
@@ -73,5 +73,5 @@ To change an icon: look up the codepoint on the [Nerd Font cheat sheet](https://
 
 - **Colors:** Edit the named color functions (e.g., `dir_color()`, `model_color()`) — defined throughout the script alongside their related sections.
 - **Icons:** Nerd Font glyphs are embedded directly in printf statements in the render section (~line 223+). See icon table above.
-- **Progress bar:** Width set in render section (~line 258), characters in `progress_bar()` function (~line 36).
-- **Tips:** Array starting ~line 308. Rotation speed controlled by divisor in `$(date +%s) / 60`.
+- **Progress bar:** Width set in render section (~line 259), characters in `progress_bar()` function (~line 36).
+- **Tips:** Array starting ~line 309. Rotation speed controlled by divisor in `$(date +%s) / 60`.
