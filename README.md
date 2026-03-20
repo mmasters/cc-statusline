@@ -45,7 +45,7 @@ The statusline displays 7 lines:
 | Nerd Font | Codepoint | Description |
 |-----------|-----------|-------------|
 | `nf-dev-git_branch` | `U+E725` | Git branch name |
-| | | `[+N ~N -N ●N]` Uncommitted changes |
+| | | `[+N ~N -N ●N]` Uncommitted changes: `+` untracked, `~` modified, `-` deleted, `●` staged |
 | | | `↑N ↓N` Commits ahead/behind remote |
 | | | `(Xh ago)` Time since last commit |
 | `nf-md-content_save` | `U+F0197` | Stash count |
